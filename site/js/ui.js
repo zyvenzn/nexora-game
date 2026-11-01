@@ -110,7 +110,14 @@ export function cardEl(def, opts = {}) {
   const c = el('div', { class: 'tcard' + (opts.mini ? ' tcard--mini' : '') + (opts.locked ? ' is-locked' : '') });
   c.style.setProperty('--name-color', NAME_COLOR[def.rarity] || '#3b4250');
   const img = el('img', { src: def.image, alt: opts.locked ? 'Card not found yet' : `${def.name}, ${rarityName(def.rarity)}`, draggable: 'false', decoding: 'async' });
-  c.append(img);
+  c.append(img, el('span', { class: 'tcard__watermark', 'aria-hidden': 'true' }, 'NEXORA'));
+  if (!opts.locked) {
+    const element = def.element || 'celestial';
+    const value = def.value ?? def.base_price ?? null;
+    c.append(el('span', { class: 'tcard__element tcard__element--' + element }, element.toUpperCase()));
+    c.append(el('span', { class: 'tcard__rarity' }, rarityName(def.rarity)));
+    if (value !== null) c.append(el('span', { class: 'tcard__price' }, '✦ ' + fmt(value)));
+  }
   if (!opts.locked && !opts.mini) c.append(el('span', { class: 'tcard__name' }, def.name));
   if (opts.count > 1) c.append(el('span', { class: 'tcard__count' }, 'x' + opts.count));
   if (opts.badge) c.append(el('span', { class: 'tcard__badge' }, opts.badge));

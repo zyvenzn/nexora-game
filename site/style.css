@@ -251,3 +251,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- premium card identity layer ---------- */
+.tcard { isolation: isolate; overflow: hidden; border-radius: 4.5%; }
+.tcard__watermark { position:absolute; z-index:2; left:-8%; right:-8%; top:47%; transform:rotate(-28deg); text-align:center; color:#fff; opacity:.24; font:700 8cqw var(--pixel); letter-spacing:.2em; text-shadow:0 1px 5px #000,0 0 12px #fff8; pointer-events:none; mix-blend-mode:screen; }
+.tcard__element,.tcard__rarity { position:absolute; z-index:3; top:5%; padding:1.2% 4%; border:1px solid #ffffff65; border-radius:999px; color:#fff; background:#090817c9; font:700 4.1cqw var(--pixel); letter-spacing:.06em; text-shadow:0 1px 3px #000; pointer-events:none; }
+.tcard__element { right:4%; }
+.tcard__rarity { left:4%; }
+.tcard__element--celestial { border-color:#f5d78b; }
+.tcard__element--ember { border-color:#ff895f; }
+.tcard__element--tide { border-color:#69d9f5; }
+.tcard__element--void { border-color:#b59aff; }
+.tcard__price { position:absolute; z-index:3; right:4%; bottom:3%; padding:1% 4%; border-radius:999px; color:#fff2c6; background:#090817d9; border:1px solid #ffe29a88; font:700 4.2cqw var(--pixel); pointer-events:none; }
+.tcard.is-locked .tcard__watermark { opacity:.12; }
+.op__sound { position:absolute; top:calc(10px + env(safe-area-inset-top)); left:12px; z-index:3; min-height:40px; padding:0 14px; color:#fff; background:#ffffff18; border:1px solid #ffffff40; border-radius:999px; cursor:pointer; font:600 .85rem sans-serif; }

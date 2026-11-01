@@ -20,9 +20,29 @@ function tearPolygons() {
   };
 }
 
+// Synthesized pack-opening sound effects; no external audio files required.
+let audioCtx = null;
+let soundOn = (() => { try { return localStorage.getItem('nexora-sound') !== 'off'; } catch { return true; } })();
+function audioStart() {
+  if (!soundOn) return;
+  try { const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx)return; audioCtx ||= new Ctx(); if(audioCtx.state==='suspended') audioCtx.resume(); } catch {}
+}
+function sfx(kind, rank=0) {
+  if(!soundOn||!audioCtx)return;
+  try {
+    const ctx=audioCtx, now=ctx.currentTime;
+    const tone=(freq,end,type='sine',volume=.07,delay=0)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,now+delay);if(end)o.frequency.exponentialRampToValueAtTime(Math.max(30,end),now+delay+.22);g.gain.setValueAtTime(.0001,now+delay);g.gain.exponentialRampToValueAtTime(volume,now+delay+.018);g.gain.exponentialRampToValueAtTime(.0001,now+delay+.28);o.connect(g);g.connect(ctx.destination);o.start(now+delay);o.stop(now+delay+.3);};
+    if(kind==='tear'){const n=Math.floor(ctx.sampleRate*.22),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=1250;g.gain.setValueAtTime(.16,now);g.gain.exponentialRampToValueAtTime(.001,now+.22);s.connect(f);f.connect(g);g.connect(ctx.destination);s.start();s.stop(now+.23);tone(170,75,'triangle',.045);}
+    else if(kind==='charge'){tone(240,720,'sine',.045);tone(360,1050,'triangle',.025,.12);}
+    else if(kind==='flip'){tone(620,260,'triangle',.055);tone(920,520,'sine',.025,.035);}
+    else if(kind==='reveal'){const base=[420,520,660,790,980][Math.max(0,Math.min(4,rank))];tone(base,base*1.35,'sine',.055+rank*.012);if(rank>=2){tone(base*1.5,base*2,'triangle',.035,.08);tone(base*2,base*2.2,'sine',.025,.16);}}
+  } catch {}
+}
+
 export async function openPack(packId) {
   const pt = state.packTypes[packId];
   if (!pt) { toast('That pack does not exist.', 'error'); return 'error'; }
+  audioStart();
   let res;
   try { res = await rpc('open_pack', { p_pack: packId }); }
   catch (e) { toast(friendly(e), 'error'); return 'error'; }
@@ -74,8 +94,10 @@ function play(pt, cards) {
     const fx = makeFx(root);
     const flash = el('div', { class: 'op__flash', 'aria-hidden': 'true' });
     const closeBtn = el('button', { class: 'op__close', type: 'button' }, 'Skip');
+    const soundBtn = el('button', { class: 'op__sound', type: 'button', 'aria-pressed': String(soundOn) }, soundOn ? 'Sound: On' : 'Sound: Off');
+    soundBtn.addEventListener('click', () => { soundOn=!soundOn; try { localStorage.setItem('nexora-sound',soundOn?'on':'off'); } catch {} soundBtn.textContent=soundOn?'Sound: On':'Sound: Off'; soundBtn.setAttribute('aria-pressed',String(soundOn)); if(soundOn){audioStart();sfx('flip');} });
     const stage = el('div', { class: 'op__stage' });
-    const wrap = el('div', { class: 'op', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Opening a ${pt.name}` }, flash, closeBtn, stage);
+    const wrap = el('div', { class: 'op', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Opening a ${pt.name}` }, flash, closeBtn, soundBtn, stage);
     root.append(wrap);
     document.body.classList.add('is-locked');
     let phase = 'tear', done = false;
@@ -104,6 +126,7 @@ function play(pt, cards) {
     /* ---------- stage 1: tear ---------- */
     function showTear() {
       phase = 'tear';
+      sfx('charge');
       closeBtn.textContent = 'Skip';
       const poly = tearPolygons();
       const body = el('div', { class: 'tear__half tear__body' }, packArt(pt));
@@ -139,6 +162,7 @@ function play(pt, cards) {
 
       function rip() {
         if (opened) return; opened = true;
+        sfx('tear');
         tapBtn.disabled = true; hint.textContent = '';
         tear.classList.remove('is-dragging'); tear.classList.add('is-ripped');
         setP(1);
@@ -175,11 +199,13 @@ function play(pt, cards) {
       let flipped = false;
       card.addEventListener('click', () => {
         if (flipped) return; flipped = true;
+        sfx('flip');
         card.classList.add('is-flipped');
         card.setAttribute('aria-label', `${c.name}, ${rar.name}`);
         const r = card.getBoundingClientRect();
         const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
         setTimeout(() => {
+          sfx('reveal', c.rank || 0);
           if (c.rank >= 1) fx.burst(cx, cy, glow, [0, 28, 60, 100, 170][c.rank] || 28, 0.8 + c.rank * 0.25);
           if (c.rank >= 2) { flash.style.setProperty('--flash', glow); flash.classList.remove('is-on'); void flash.offsetWidth; flash.classList.add('is-on'); }
           if (navigator.vibrate) navigator.vibrate(c.rank >= 2 ? [30, 40, 60] : 15);
