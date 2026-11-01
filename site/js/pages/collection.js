@@ -1,6 +1,7 @@
 import { rpc } from '../api.js';
 import { state } from '../state.js';
 import { el, cardEl, chip, coin, fmt, setTitle, rarityColor, rarityName } from '../ui.js';
+import { sellDialog } from '../sell.js';
 
 const ELEMENTS = ['celestial', 'ember', 'tide', 'void'];
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -63,13 +64,18 @@ export async function render() {
         el('h2', {}, mine.length ? d.name : 'Not found yet'),
         mine.length ? el('p', { class: 'muted' }, d.blurb) : el('p', { class: 'muted' }, `A ${rarityName(d.rarity)} ${cap(d.element)} card. Open packs to find it.`),
         el('dl', { class: 'facts' },
-          fact('Reference value', coin(d.value)),
+          fact('Element', cap(d.element)), fact('Reference value', coin(d.value)),
           fact('Lowest price now', d.floor ? coin(d.floor) : 'None for sale'),
           fact('Last sale', d.last_sale ? coin(d.last_sale) : 'No sales yet'),
           fact('Copies in the world', fmt(d.minted)),
           fact('Players who own it', fmt(d.holders))),
         mine.length ? el('div', {}, el('h3', { class: 'small-title' }, `Your copies (${mine.length})`),
-          el('ul', { class: 'copies' }, copies.map(c => el('li', {}, '#' + c.serial, c.status !== 'owned' ? el('span', { class: 'tag' }, ({ listed: 'For sale', auction: 'In auction', trade: 'In a trade' })[c.status] || c.status) : null)))) : null));
+          el('ul', { class: 'copies' }, copies.map(c => {
+          const li = el('li', {}, '#' + c.serial);
+          if (c.status !== 'owned') li.append(el('span', { class: 'tag' }, ({ listed: 'For sale', auction: 'In auction', trade: 'In a trade' })[c.status] || c.status));
+          else { const b = el('button', { class: 'linkbtn', type: 'button' }, 'Sell'); b.addEventListener('click', () => { close(); sellDialog(c); }); li.append(b); }
+          return li;
+        }))) : null));
     const wrap = el('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': d.name }, el('div', { class: 'sheet__panel' }, closeBtn, body));
     wrap.addEventListener('click', e => { if (e.target === wrap) close(); });
     overlay.append(wrap); document.body.classList.add('is-locked'); document.addEventListener('keydown', onKey);

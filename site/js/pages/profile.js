@@ -17,7 +17,7 @@ export async function render(ctx) {
     avatar(p, 88),
     el('div', { class: 'pf__names' }, el('h1', { class: 'page-title' }, p.display_name), el('p', { class: 'muted' }, '@' + p.username + ' · joined ' + joined),
       p.banned ? el('p', { class: 'tag tag--bad' }, 'Suspended') : null),
-    mine ? el('a', { class: 'btn btn--ghost btn--small', href: '#/settings' }, 'Edit profile') : null);
+    mine ? el('a', { class: 'btn btn--ghost btn--small', href: '#/settings' }, 'Edit profile') : (state.profile && !p.banned ? el('a', { class: 'btn btn--small', href: '#/trades/new?to=' + encodeURIComponent(p.username) }, 'Trade') : null));
   const stats = el('div', { class: 'stats' },
     s('Rank', p.rank ? '#' + p.rank : '-'), s('Score', fmt(p.score)), s('Cards', fmt(p.total)), s('Completion', p.completion + '%'), s('Trades', fmt(p.trades_done)));
   return el('div', { class: 'page pf' }, banner, head,

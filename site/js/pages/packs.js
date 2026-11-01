@@ -76,6 +76,8 @@ export async function render() {
         return el('section', { class: 'panel panel--row' }, el('div', {}, el('h2', {}, 'Daily bonus'), el('p', { class: 'muted' }, 'Free Stardust every day, enough to keep opening packs.')), b);
       })(),
 
+      el('section', { class: 'panel panel--row' }, el('div', {}, el('h2', {}, 'Craft packs'), el('p', { class: 'muted' }, 'Turn spare cards into new packs.')), el('a', { class: 'btn btn--ghost', href: '#/craft' }, 'Open crafting')),
+
       // owned, unopened packs
       el('section', { class: 'section' },
         el('h2', { class: 'section__title' }, 'Your packs'),

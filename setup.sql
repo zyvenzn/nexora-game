@@ -58,27 +58,7 @@ insert into public.card_defs (id, name, rarity, element, image, blurb) values
   ('common-06',   'Bubble Drift',  'common',   'tide',      'assets/cards/common-06.png',   'Went for a swim. Forgot to come back.'),
   ('common-07',   'Shade Peek',    'common',   'void',      'assets/cards/common-07.png',   'Hiding. You can see it. It does not know.'),
   ('common-08',   'Void Drifter',  'common',   'void',      'assets/cards/common-08.png',   'Floats through space. No destination.'),
-  ('uncommon-01', 'Emerald Gloom', 'uncommon', 'void',      'assets/cards/uncommon-01.png', 'Wears a green gem. Will not say where it got it.'),
-  ('common-09', 'Astra Wisp', 'common', 'celestial', 'assets/cards/common-09.svg', 'A tiny star spirit that collects forgotten wishes.', 10),
-  ('uncommon-02', 'Moonveil Lynx', 'uncommon', 'celestial', 'assets/cards/uncommon-02.svg', 'A silent guardian that walks between moonbeams.', 40),
-  ('rare-01', 'Astral Stag', 'rare', 'celestial', 'assets/cards/rare-01.svg', 'Its antlers map constellations no mortal has seen.', 150),
-  ('epic-01', 'Oracle of Dawn', 'epic', 'celestial', 'assets/cards/epic-01.svg', 'She reads tomorrow in the first light of a new sun.', 600),
-  ('celestial-01', 'Eclipsera', 'celestial', 'celestial', 'assets/cards/celestial-01.svg', 'The living eclipse, keeper of the cosmic threshold.', 3000),
-  ('common-10', 'Cinderling', 'common', 'ember', 'assets/cards/common-10.svg', 'A cheerful spark with a talent for tiny explosions.', 10),
-  ('common-11', 'Ash Hopper', 'common', 'ember', 'assets/cards/common-11.svg', 'Leaps through hot coals without singeing a whisker.', 10),
-  ('uncommon-03', 'Ashfang', 'uncommon', 'ember', 'assets/cards/uncommon-03.svg', 'A young drake whose breath turns stone to glass.', 40),
-  ('rare-02', 'Pyrewing', 'rare', 'ember', 'assets/cards/rare-02.svg', 'A phoenix-born hunter that never lands twice.', 150),
-  ('epic-02', 'Inferno Sovereign', 'epic', 'ember', 'assets/cards/epic-02.svg', 'An ancient ruler crowned by a storm of living flame.', 600),
-  ('common-12', 'Ripplefin', 'common', 'tide', 'assets/cards/common-12.svg', 'A curious little swimmer that follows every bubble.', 10),
-  ('uncommon-04', 'Pearlwarden', 'uncommon', 'tide', 'assets/cards/uncommon-04.svg', 'A patient sentinel protecting the hidden reef gates.', 40),
-  ('uncommon-05', 'Coral Dancer', 'uncommon', 'tide', 'assets/cards/coral-dancer.svg', 'Moves with the current and leaves gardens in its wake.', 40),
-  ('rare-03', 'Abyssal Leviathan', 'rare', 'tide', 'assets/cards/rare-03.svg', 'A deep-sea titan whose shadow quiets the ocean.', 150),
-  ('epic-03', 'Tidemother', 'epic', 'tide', 'assets/cards/epic-03.svg', 'The first wave, said to have shaped every living shore.', 600),
-  ('common-13', 'Gloomkin', 'common', 'void', 'assets/cards/common-13.svg', 'A shy shadow that borrows shapes from passing dreams.', 10),
-  ('common-14', 'Null Mote', 'common', 'void', 'assets/cards/common-14.svg', 'A tiny anomaly that makes nearby candles flicker.', 10),
-  ('uncommon-06', 'Rift Stalker', 'uncommon', 'void', 'assets/cards/uncommon-06.svg', 'Tracks lost things through cracks between worlds.', 40),
-  ('uncommon-07', 'Dusk Harrier', 'uncommon', 'void', 'assets/cards/dusk-harrier.svg', 'A silent hunter that circles the edge of reality.', 40),
-  ('rare-04', 'Null Raven', 'rare', 'void', 'assets/cards/rare-04.svg', 'Carries messages from places that no longer exist.', 150);
+  ('uncommon-01', 'Emerald Gloom', 'uncommon', 'void',      'assets/cards/uncommon-01.png', 'Wears a green gem. Will not say where it got it.');
 
 create table public.card_serials (
   def_id      text primary key references public.card_defs(id),
@@ -277,6 +257,7 @@ create table public.audit_log (
   details  jsonb,
   at       timestamptz not null default now()
 );
+
 -- =====================================================================
 -- Part 2: helpers, accounts, packs, collection, crafting
 -- Every function below runs with the owner's rights; tables are not
@@ -640,6 +621,7 @@ begin
   perform public._add_pack(me.id, rc.output_pack, 1);
   return jsonb_build_object('pack', rc.output_pack, 'me', public.get_me());
 end $$;
+
 -- =====================================================================
 -- Part 3: marketplace, auctions, trades, reports
 -- Safety rules built in:
@@ -1054,6 +1036,7 @@ begin
   insert into public.reports (reporter, target, trade_id, reason) values (me.id, target.id, p_trade, trim(p_reason));
   return jsonb_build_object('ok', true);
 end $$;
+
 -- =====================================================================
 -- Part 4: leaderboard, public profiles, admin panel
 -- =====================================================================
@@ -1339,6 +1322,7 @@ begin
             'admin', public._user_json(l.admin_id)) order by l.id desc)
           from (select * from public.audit_log order by id desc limit least(greatest(p_limit, 1), 200)) l), '[]'::jsonb);
 end $$;
+
 -- =====================================================================
 -- Part 5: lock everything down
 -- Players can only call the functions listed here. They cannot read or
@@ -1377,6 +1361,7 @@ begin
     end if;
   end loop;
 end $$;
+
 -- =====================================================================
 -- Part 6: storage for profile pictures and banners (public bucket, own folder only)
 -- =====================================================================
@@ -1402,3 +1387,29 @@ create policy "nexora profiles update own" on storage.objects
 create policy "nexora profiles delete own" on storage.objects
   for delete to authenticated
   using (bucket_id = 'profiles' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Nexora card expansion v1
+-- Additive migration: does not reset collections, card serials, player balances or inventory.
+insert into public.card_defs (id,name,rarity,element,image,blurb,base_price,active) values
+('common-09','Astra Wisp','common','celestial','assets/cards/common-09.svg','A tiny star spirit that collects forgotten wishes.',10,true),
+('uncommon-02','Moonveil Lynx','uncommon','celestial','assets/cards/uncommon-02.svg','A silent guardian that walks between moonbeams.',40,true),
+('rare-01','Astral Stag','rare','celestial','assets/cards/rare-01.svg','Its antlers map constellations no mortal has seen.',150,true),
+('epic-01','Oracle of Dawn','epic','celestial','assets/cards/epic-01.svg','She reads tomorrow in the first light of a new sun.',600,true),
+('celestial-01','Eclipsera','celestial','celestial','assets/cards/celestial-01.svg','The living eclipse, keeper of the cosmic threshold.',3000,true),
+('common-10','Cinderling','common','ember','assets/cards/common-10.svg','A cheerful spark with a talent for tiny explosions.',10,true),
+('common-11','Ash Hopper','common','ember','assets/cards/common-11.svg','Leaps through hot coals without singeing a whisker.',10,true),
+('uncommon-03','Ashfang','uncommon','ember','assets/cards/uncommon-03.svg','A young drake whose breath turns stone to glass.',40,true),
+('rare-02','Pyrewing','rare','ember','assets/cards/rare-02.svg','A phoenix-born hunter that never lands twice.',150,true),
+('epic-02','Inferno Sovereign','epic','ember','assets/cards/epic-02.svg','An ancient ruler crowned by a storm of living flame.',600,true),
+('common-12','Ripplefin','common','tide','assets/cards/common-12.svg','A curious little swimmer that follows every bubble.',10,true),
+('uncommon-04','Pearlwarden','uncommon','tide','assets/cards/uncommon-04.svg','A patient sentinel protecting the hidden reef gates.',40,true),
+('uncommon-05','Coral Dancer','uncommon','tide','assets/cards/coral-dancer.svg','Moves with the current and leaves gardens in its wake.',40,true),
+('rare-03','Abyssal Leviathan','rare','tide','assets/cards/rare-03.svg','A deep-sea titan whose shadow quiets the ocean.',150,true),
+('epic-03','Tidemother','epic','tide','assets/cards/epic-03.svg','The first wave, said to have shaped every living shore.',600,true),
+('common-13','Gloomkin','common','void','assets/cards/common-13.svg','A shy shadow that borrows shapes from passing dreams.',10,true),
+('common-14','Null Mote','common','void','assets/cards/common-14.svg','A tiny anomaly that makes nearby candles flicker.',10,true),
+('uncommon-06','Rift Stalker','uncommon','void','assets/cards/uncommon-06.svg','Tracks lost things through cracks between worlds.',40,true),
+('uncommon-07','Dusk Harrier','uncommon','void','assets/cards/dusk-harrier.svg','A silent hunter that circles the edge of reality.',40,true),
+('rare-04','Null Raven','rare','void','assets/cards/rare-04.svg','Carries messages from places that no longer exist.',150,true)
+on conflict (id) do update set name=excluded.name, rarity=excluded.rarity, element=excluded.element,
+ image=excluded.image, blurb=excluded.blurb, base_price=excluded.base_price, active=true;

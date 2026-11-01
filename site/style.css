@@ -265,3 +265,49 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tcard__price { position:absolute; z-index:3; right:4%; bottom:19%; padding:1% 4%; border-radius:999px; color:#fff2c6; background:#090817d9; border:1px solid #ffe29a88; font:700 4.2cqw var(--pixel); pointer-events:none; }
 .tcard.is-locked .tcard__watermark { opacity:.12; }
 .op__sound { position:absolute; top:calc(10px + env(safe-area-inset-top)); left:12px; z-index:3; min-height:40px; padding:0 14px; color:#fff; background:#ffffff18; border:1px solid #ffffff40; border-radius:999px; cursor:pointer; font:600 .85rem sans-serif; }
+
+/* ---------- phase 2: market, auctions, trades, craft ---------- */
+.dot { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 6px; border-radius: 999px; background: var(--bad); color: #2a0010; font: 700 .72rem/18px var(--pixel); text-align: center; }
+.seg--sub { background: transparent; padding: 0; margin: 4px 0 14px; }
+.seg--sub .seg__item { flex: none; background: var(--bg2); }
+.seg--sub .seg__item.is-on { background: var(--panel2); }
+.cgrid--wide { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+.cgrid--small { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+@media (min-width: 640px) { .cgrid--wide { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } .cgrid--small { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); } }
+.cell__sub { font-size: .72rem; color: var(--muted); }
+.cell__price { font: 700 .85rem var(--pixel); color: var(--accent); }
+.cell__note { font-size: .72rem; color: var(--muted); }
+.cell.is-picked { background: #ffd36b22; outline: 2px solid var(--accent); }
+.cell--static { cursor: default; }
+.cell--static:hover { background: transparent; }
+.sheet__panel .form { padding-top: 6px; }
+.banner { padding: 10px 12px; border-radius: 10px; margin: 8px 0; border: 1px solid var(--line); background: var(--bg2); }
+.banner--warn { border-color: #ff8f9d88; background: #5a1f3355; color: #ffd6dc; }
+.banner--good { border-color: #8df0cf88; background: #0f4a3d55; color: #c8fff0; }
+.tag--quiet { opacity: .7; }
+.check { display: flex; gap: 8px; align-items: flex-start; }
+.check input { width: 22px; height: 22px; flex: none; margin-top: 2px; }
+.tradelist { display: grid; gap: 10px; }
+.tradecard { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; text-decoration: none; color: var(--text); flex-wrap: wrap; }
+.tradecard.is-warn { border-color: #ff8f9d88; }
+.tradecard__main { display: grid; flex: 1; min-width: 180px; gap: 2px; }
+.side { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 12px 0; }
+.side h2 { font: 700 1.05rem var(--pixel); margin-bottom: 10px; }
+.side__coins { font: 700 1.2rem var(--pixel); color: var(--accent); margin: 8px 0 2px; }
+.quote { background: var(--bg2); border-left: 4px solid var(--line); padding: 8px 12px; border-radius: 6px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+.tips { margin: 8px 0; padding-left: 20px; display: grid; gap: 6px; }
+.tradesum { background: var(--bg2); border-radius: 12px; padding: 10px 14px; margin: 12px 0; }
+.tradesum p { margin: 0 0 4px; }
+.stepper { display: grid; gap: 4px; justify-items: center; padding: 4px; border-radius: 12px; }
+.stepper.is-picked { background: #ffd36b22; outline: 2px solid var(--accent); }
+.stepper__row { display: flex; align-items: center; gap: 8px; }
+.stepper__n { font: 700 .9rem var(--pixel); min-width: 48px; text-align: center; }
+.craft__head { display: flex; gap: 16px; align-items: center; margin-bottom: 10px; }
+.craft__art { width: 70px; flex: none; }
+.craft__count { font: 700 .95rem var(--pixel); color: var(--accent); margin: 4px 0 0; }
+.craft__tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.craft__go { margin-top: 14px; }
+.time { font-weight: 600; }
+.sheet__panel input[type=number], .sheet__panel input[type=text], .sheet__panel select, .sheet__panel textarea, .side input, .page > .panel input, .form select, .form input[type=number], .form input[type=text], .field select, .field input[type=number], .field input[type=text], .field textarea { width: 100%; min-height: 44px; padding: 10px 12px; background: #150f35; border: 1px solid var(--line); border-radius: 10px; }
+.sheet__panel .check input { width: 22px; min-height: 22px; padding: 0; }

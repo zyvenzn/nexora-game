@@ -170,7 +170,7 @@ const MESSAGES = {
   trade_closed: 'That trade is already closed.', trade_expired: 'That trade expired.', items_unavailable: 'One of the cards in this trade is no longer available.',
   too_many_trades: 'You have too many open trades.', bad_amount: 'That amount is not allowed.', message_too_long: 'Message is too long.',
   bad_craft_items: 'Pick exactly the required number of cards of the right rarity.', unknown_recipe: 'That recipe does not exist.',
-  bad_reason: 'Please describe the problem in a few words.', report_limit: 'Too many reports today.', player_unavailable: 'That player cannot trade right now.',
+  bad_reason: 'Please describe the problem in a few words.', self_report: 'You cannot report yourself.', report_limit: 'Too many reports today.', player_unavailable: 'That player cannot trade right now.',
   not_admin: 'Admins only.', confirm_email: 'Check your email to confirm your account, then log in.',
   invalid_credentials: 'Wrong email or password.', user_already_exists: 'That email already has an account. Try logging in.',
   email_exists: 'That email already has an account. Try logging in.', weak_password: 'Password is too weak. Use at least 8 characters.',
