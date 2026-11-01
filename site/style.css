@@ -262,6 +262,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tcard__element--ember { border-color:#ff895f; }
 .tcard__element--tide { border-color:#69d9f5; }
 .tcard__element--void { border-color:#b59aff; }
-.tcard__price { position:absolute; z-index:3; right:4%; bottom:3%; padding:1% 4%; border-radius:999px; color:#fff2c6; background:#090817d9; border:1px solid #ffe29a88; font:700 4.2cqw var(--pixel); pointer-events:none; }
+.tcard__price { position:absolute; z-index:3; right:4%; bottom:19%; padding:1% 4%; border-radius:999px; color:#fff2c6; background:#090817d9; border:1px solid #ffe29a88; font:700 4.2cqw var(--pixel); pointer-events:none; }
 .tcard.is-locked .tcard__watermark { opacity:.12; }
 .op__sound { position:absolute; top:calc(10px + env(safe-area-inset-top)); left:12px; z-index:3; min-height:40px; padding:0 14px; color:#fff; background:#ffffff18; border:1px solid #ffffff40; border-radius:999px; cursor:pointer; font:600 .85rem sans-serif; }
